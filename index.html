@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StockMeta AI Pro</title>
+  <style>
+    :root{
+      --bg:#08111f; --panel:#0f1a2d; --panel2:#14233d; --text:#e8eefc; --muted:#9aa9c7;
+      --line:#223453; --brand:#7c9cff; --brand2:#22c55e; --warn:#f59e0b; --err:#ef4444;
+      --chip:#1a2944; --okbg:rgba(34,197,94,.12); --warnbg:rgba(245,158,11,.12); --errbg:rgba(239,68,68,.12);
+      --shadow:0 18px 40px rgba(0,0,0,.28);
+    }
+    :root[data-theme="light"]{
+      --bg:#f4f7fb; --panel:#ffffff; --panel2:#edf2fb; --text:#102033; --muted:#5f6f8e;
+      --line:#d8e1ef; --brand:#365dff; --brand2:#0f9f4f; --chip:#e8eef9;
+      --shadow:0 16px 30px rgba(29,45,76,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      background:radial-gradient(1200px 700px at 20% -10%, rgba(124,156,255,.14), transparent 60%),
+                 radial-gradient(900px 500px at 100% 0%, rgba(34,197,94,.08), transparent 45%),
+                 linear-gradient(180deg,var(--bg),#07111f);
+      color:var(--text);
+    }
+    header{
+      position:sticky; top:0; z-index:20;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding:14px 16px; border-bottom:1px solid var(--line);
+      background:rgba(6,12,24,.82); backdrop-filter:blur(12px);
+    }
+    .brand{display:flex;flex-direction:column;gap:2px}
+    .brand strong{font-size:16px; letter-spacing:.2px}
+    .brand span{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    button, input, select, textarea{font:inherit}
+    button{
+      border:0; border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:700;
+      background:var(--brand); color:#fff; transition:transform .15s ease, opacity .15s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    button.secondary{background:var(--chip); color:var(--text); border:1px solid var(--line)}
+    button.ghost{background:transparent; color:var(--text); border:1px solid var(--line)}
+    main{
+      display:grid; grid-template-columns:320px minmax(0,1fr) 360px; gap:14px;
+      padding:14px; min-height:calc(100vh - 72px);
+    }
+    .panel{
+      background:linear-gradient(180deg,var(--panel),rgba(255,255,255,.01));
+      border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); overflow:hidden;
+      min-height:100px;
+    }
+    .panel h2,.panel h3{
+      margin:0; padding:14px 16px; border-bottom:1px solid var(--line); font-size:15px;
+      background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+    }
+    .body{padding:14px 16px}
+    .muted{color:var(--muted)}
+    .drop{
+      border:2px dashed var(--line); border-radius:16px; padding:18px; text-align:center;
+      background:var(--panel2);
+    }
+    .drop.drag{border-color:var(--brand); background:rgba(124,156,255,.11)}
+    .drop small{display:block;color:var(--muted);margin-top:6px;line-height:1.4}
+    input[type=file]{width:100%; margin-top:12px}
+    .bar{
+      height:12px; background:var(--panel2); border:1px solid var(--line); border-radius:999px; overflow:hidden;
+    }
+    .bar > div{
+      height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--brand2));
+      transition:width .25s ease;
+    }
+    .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .kv{
+      background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:10px;
+    }
+    .kv strong{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    .list{display:flex;flex-direction:column;gap:8px;max-height:44vh;overflow:auto}
+    .asset{
+      border:1px solid var(--line); background:var(--panel2); border-radius:14px; padding:10px; cursor:pointer;
+    }
+    .asset.active{outline:2px solid var(--brand)}
+    .asset .row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .asset .name{font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .asset .sub{font-size:12px;color:var(--muted);margin-top:4px}
+    .scroll{max-height:38vh;overflow:auto}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{
+      display:inline-flex; align-items:center; gap:6px;
+      background:var(--chip); border:1px solid var(--line); border-radius:999px;
+      padding:6px 10px; font-size:12px;
+    }
+    .notice{
+      border-radius:12px; padding:10px 12px; margin-bottom:8px; font-size:13px; line-height:1.45;
+    }
+    .notice.warn{background:var(--warnbg); border:1px solid rgba(245,158,11,.35); color:#f7c96c}
+    .notice.err{background:var(--errbg); border:1px solid rgba(239,68,68,.35); color:#ff9b9b}
+    .notice.ok{background:var(--okbg); border:1px solid rgba(34,197,94,.35); color:#9cf0bd}
+    textarea{
+      width:100%; min-height:110px; resize:vertical; padding:10px; border-radius:12px;
+      border:1px solid var(--line); background:var(--panel2); color:var(--text);
+    }
+    .preview{
+      display:flex; align-items:center; justify-content:center; min-height:320px; text-align:center;
+      border:1px solid var(--line); border-radius:14px; background:var(--panel2); overflow:hidden;
+    }
+    .preview img,.preview video{
+      max-width:100%; max-height:360px; width:auto; height:auto; object-fit:contain; display:block;
+    }
+    .footer-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .section-gap{height:12px}
+    .badge{
+      display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px;
+      background:var(--chip); border:1px solid var(--line); font-size:12px; color:var(--text)
+    }
+    .toast-wrap{position:fixed;right:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;z-index:40}
+    .toast{
+      min-width:240px; max-width:380px; padding:12px 14px; border-radius:14px;
+      border:1px solid var(--line); background:var(--panel); box-shadow:var(--shadow); font-size:13px;
+    }
+    .toast.ok{border-color:rgba(34,197,94,.35)}
+    .toast.err{border-color:rgba(239,68,68,.35)}
+    .toast.warn{border-color:rgba(245,158,11,.35)}
+    @media (max-width:1100px){
+      main{grid-template-columns:1fr}
+      .list,.scroll{max-height:none}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <strong>StockMeta AI Pro</strong>
+    <span>1-file static test version for GitHub Pages / Netlify</span>
+  </div>
+  <div class="actions">
+    <button id="themeBtn" class="secondary">Toggle Theme</button>
+    <button id="clearBtn" class="ghost">Clear</button>
+    <button id="sampleBtn" class="secondary">Load Sample</button>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>Upload & Asset List</h2>
+    <div class="body">
+      <div id="drop" class="drop">
+        <strong>Drag & drop files here</strong>
+        <small>JPG, JPEG, PNG, WEBP, SVG, EPS, AI, MP4, MOV, WEBM. Up to 1000 files for batch testing.</small>
+        <input id="fileInput" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.svg,.eps,.ai,.mp4,.mov,.webm,image/*,video/*" />
+      </div>
+      <div class="section-gap"></div>
+      <div class="bar"><div id="barFill"></div></div>
+      <div id="batchText" class="muted" style="margin-top:8px">No files loaded</div>
+      <div class="section-gap"></div>
+      <div id="assetList" class="list"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Preview & Analyzer</h2>
+    <div class="body">
+      <div id="preview" class="preview">
+        <div>
+          <strong>No asset selected</strong>
+          <div class="muted" style="margin-top:6px">Select an uploaded file to inspect preview and metadata.</div>
+        </div>
+      </div>
+      <div class="section-gap"></div>
+      <div class="meta-grid">
+        <div class="kv"><strong>Status</strong><div id="statusText">Idle</div></div>
+        <div class="kv"><strong>Type</strong><div id="typeText">—</div></div>
+      </div>
+      <div class="section-gap"></div>
+      <div class="kv">
+        <strong>Analysis JSON</strong>
+        <textarea id="analysisBox" readonly></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Metadata & Export</h2>
+    <div class="body scroll">
+      <div id="alerts"></div>
+
+      <div class="kv">
+        <strong>Adobe Stock</strong>
+        <div id="adobeMeta" class="muted">No data yet</div>
+      </div>
+      <div class="section-gap"></div>
+
+      <div class="kv">
+        <strong>Shutterstock</strong>
+        <div id="shutterMeta" class="muted">No data yet</div>
+      </div>
+      <div class="section-gap"></div>
+
+      <div class="kv">
+        <strong>Freepik</strong>
+        <div id="freepikMeta" class="muted">No data yet</div>
+      </div>
+      <div class="section-gap"></div>
+
+      <div class="kv">
+        <strong>Dreamstime</strong>
+        <div id="dreamMeta" class="muted">No data yet</div>
+      </div>
+
+      <div class="section-gap"></div>
+      <div class="footer-actions">
+        <button id="csvBtn">Export CSV</button>
+        <button id="jsonBtn" class="secondary">Export JSON</button>
+      </div>
+
+      <div class="section-gap"></div>
+      <div class="kv">
+        <strong>Batch Status</strong>
+        <div id="batchStatus">Waiting for files</div>
+      </div>
+
+      <div class="section-gap"></div>
+      <div class="kv">
+        <strong>Keywords Preview</strong>
+        <div id="kwPreview" class="chips"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toastWrap" class="toast-wrap"></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    fileInput: $('fileInput'),
+    drop: $('drop'),
+    assetList: $('assetList'),
+    preview: $('preview'),
+    analysisBox: $('analysisBox'),
+    adobeMeta: $('adobeMeta'),
+    shutterMeta: $('shutterMeta'),
+    freepikMeta: $('freepikMeta'),
+    dreamMeta: $('dreamMeta'),
+    alerts: $('alerts'),
+    barFill: $('barFill'),
+    batchText: $('batchText'),
+    batchStatus: $('batchStatus'),
+    statusText: $('statusText'),
+    typeText: $('typeText'),
+    kwPreview: $('kwPreview'),
+    themeBtn: $('themeBtn'),
+    clearBtn: $('clearBtn'),
+    sampleBtn: $('sampleBtn'),
+    csvBtn: $('csvBtn'),
+    jsonBtn: $('jsonBtn'),
+    toastWrap: $('toastWrap'),
+  };
+
+  const state = {
+    assets: [],
+    selectedId: null,
+    theme: localStorage.getItem('sm_theme') || 'dark',
+  };
+
+  document.documentElement.setAttribute('data-theme', state.theme);
+
+  const ACCEPTED = /.(jpg|jpeg|png|webp|svg|eps|ai|mp4|mov|webm)$/i;
+
+  function toast(msg, type = 'ok') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    els.toastWrap.appendChild(el);
+    setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(6px)';
+      el.style.transition = 'all .25s ease';
+      setTimeout(() => el.remove(), 260);
+    }, 2200);
+  }
+
+  function uid() {
+    return (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+  }
+
+  function detectType(file) {
+    const n = file.name.toLowerCase();
+    if (file.type.startsWith('video/') || /.(mp4|mov|webm)$/i.test(n)) return 'video';
+    if (/.svg$/i.test(n) || /.eps$/i.test(n) || /.ai$/i.test(n)) return 'vector';
+    return 'image';
+  }
+
+  function normalizeWords(text) {
+    return String(text || '')
+      .replace(/.[^.]+$/, '')
+      .replace(/[_-]+/g, ' ')
+      .replace(/[^a-zA-Z0-9s]/g, ' ')
+      .replace(/s+/g, ' ')
+      .trim()
+      .toLowerCase()
+      .split(' ')
+      .filter(Boolean);
+  }
+
+  function uniq(arr) {
+    return [...new Set((arr || []).map(v => String(v || '').trim()).filter(Boolean))];
+  }
+
+  function isWeakKeyword(k) {
+    const weak = new Set([
+      'image','photo','picture','graphic','illustration','template','background','asset',
+      'file','stock','art','design','object','thing','example','sample'
+    ]);
+    return weak.has(String(k).toLowerCase());
+  }
+
+  function analyzeLocal(asset) {
+    const words = normalizeWords(asset.file.name);
+    const primary = words.find(Boolean) || 'stock asset';
+    const baseConcepts = [
+      'business','marketing','technology','creative','modern','digital','commercial',
+      'lifestyle','minimal','studio','web','editorial'
+    ];
+    const concepts = uniq([...words.slice(0, 5), ...baseConcepts.slice(0, 4)]).filter(k => !isWeakKeyword(k));
+    const objects = uniq(words.slice(0, 8)).filter(k => !isWeakKeyword(k));
+    const colors = /blue|red|green|black|white|yellow|orange|pink|purple|gray|grey|brown|beige/i.exec(asset.file.name);
+    const category = asset.type === 'video' ? 'Video' : asset.type === 'vector' ? 'Vector' : 'Photo';
+    const analysis = {
+      main_subject: primary,
+      concepts,
+      objects,
+      colors: colors ? [colors[0].toLowerCase()] : ['mixed'],
+      category,
+      commercial_usage: 'Commercial stock use, marketing, web, social media, and business content.',
+    };
+
+    if (asset.type === 'video') {
+      Object.assign(analysis, {
+        duration: 'Unknown',
+        fps: 'Unknown',
+        resolution: 'Unknown',
+        orientation: 'Unknown',
+        main_scenes: [primary],
+        motion_type: 'Unknown',
+        commercial_concepts: concepts.slice(0, 6),
+      });
+    }
+
+    if (asset.type === 'vector') {
+      Object.assign(analysis, {
+        icon_style: 'Unknown',
+        flat_style: true,
+        outline_style: false,
+        filled_style: false,
+        gradient_style: false,
+        '3d_style': false,
+        design_category: 'Graphic design',
+      });
+    }
+
+    return analysis;
+  }
+
+  function rankKeywords(analysis) {
+    const seed = [
+      analysis.main_subject,
+      ...(analysis.concepts || []),
+      ...(analysis.objects || []),
+      ...(analysis.colors || []),
+      analysis.category,
+      'commercial',
+      'business',
+      'marketing',
+      'digital',
+      'creative',
+      'modern',
+      'high quality',
+      'isolated',
+      'studio',
+      'web'
+    ].filter(Boolean);
+
+    const cleaned = uniq(seed)
+      .filter(k => !isWeakKeyword(k))
+      .map(k => k.toLowerCase());
+
+    return cleaned.slice(0, 50);
+  }
+
+  function buildMetadata(analysis) {
+    const keywords = rankKeywords(analysis);
+    const title = (analysis.main_subject || analysis.category || 'stock asset').replace(/\bw/g, c => c.toUpperCase());
+
+    return {
+      adobe: {
+        Title: title,
+        Keywords: keywords.slice(0, 49),
+        Category: analysis.category || 'Other',
+      },
+      shutterstock: {
+        Description: `${title}. ${analysis.commercial_usage || ''}`.trim(),
+        Keywords: keywords.slice(0, 50),
+      },
+      freepik: {
+        Title: `${title} Stock`,
+        Tags: keywords.slice(0, 20),
+      },
+      dreamstime: {
+        Title: title,
+        Description: analysis.commercial_usage || '',
+        Keywords: keywords.slice(0, 50),
+        Category: analysis.category || 'Other',
+      }
+    };
+  }
+
+  function complianceWarnings(analysis) {
+    const txt = JSON.stringify(analysis).toLowerCase();
+    const warnings = [];
+    if (txt.includes('logo') || txt.includes('brand') || txt.includes('trademark')) {
+      warnings.push('Possible logo, brand, or trademark risk detected.');
+    }
+    if (txt.includes('watermark')) warnings.push('Possible watermark detected.');
+    return warnings;
+  }
+
+  function releaseWarnings(analysis) {
+    const txt = JSON.stringify(analysis).toLowerCase();
+    const warnings = [];
+    if (txt.includes('face') || txt.includes('person') || txt.includes('people') || txt.includes('human')) {
+      warnings.push('Model release may be required for recognizable people.');
+    }
+    if (txt.includes('building') || txt.includes('house') || txt.includes('private property')) {
+      warnings.push('Property release may be required for recognizable property/buildings.');
+    }
+    if (txt.includes('vehicle') || txt.includes('car') || txt.includes('motorcycle')) {
+      warnings.push('Vehicle/property release may be required depending on context.');
+    }
+    return warnings;
+  }
+
+  function setAlerts(warns, releases) {
+    els.alerts.innerHTML = '';
+    if (!warns.length && !releases.length) {
+      els.alerts.innerHTML = '<div class="notice ok">No immediate compliance or release risks detected in static test mode.</div>';
+      return;
+    }
+    warns.forEach(w => {
+      const d = document.createElement('div');
+      d.className = 'notice warn';
+      d.textContent = w;
+      els.alerts.appendChild(d);
+    });
+    releases.forEach(w => {
+      const d = document.createElement('div');
+      d.className = 'notice warn';
+      d.textContent = w;
+      els.alerts.appendChild(d);
+    });
+  }
+
+  function renderAssetList() {
+    els.assetList.innerHTML = '';
+    if (!state.assets.length) {
+      els.batchText.textContent = 'No files loaded';
+      els.batchStatus.textContent = 'Waiting for files';
+      els.barFill.style.width = '0%';
+      return;
+    }
+
+    els.batchText.textContent = `${state.assets.length} file(s) loaded`;
+    els.batchStatus.textContent = `Ready: ${state.assets.length} asset(s)`;
+    els.barFill.style.width = '100%';
+
+    state.assets.forEach(asset => {
+      const item = document.createElement('div');
+      item.className = 'asset' + (state.selectedId === asset.id ? ' active' : '');
+      item.innerHTML = `
+        <div class="row">
+          <div class="name">${escapeHtml(asset.file.name)}</div>
+          <span class="badge">${asset.type.toUpperCase()}</span>
+        </div>
+        <div class="sub">${prettyBytes(asset.file.size)} • ${asset.status}</div>
+      `;
+      item.addEventListener('click', () => {
+        state.selectedId = asset.id;
+        renderSelected();
+        renderAssetList();
+      });
+      els.assetList.appendChild(item);
+    });
+  }
+
+  function renderSelected() {
+    const asset = state.assets.find(a => a.id === state.selectedId) || state.assets[0];
+    if (!asset) return;
+
+    const analysis = asset.analysis;
+    const meta = asset.metadata;
+
+    els.statusText.textContent = asset.status;
+    els.typeText.textContent = asset.type;
+    els.analysisBox.value = JSON.stringify(analysis, null, 2);
+
+    const warns = complianceWarnings(analysis);
+    const releases = releaseWarnings(analysis);
+    setAlerts(warns, releases);
+
+    els.adobeMeta.innerHTML = `
+      <div>Title: ${escapeHtml(meta.adobe.Title)}</div>
+      <div>Category: ${escapeHtml(meta.adobe.Category)}</div>
+      <div>Keywords (${meta.adobe.Keywords.length}): ${escapeHtml(meta.adobe.Keywords.join(', '))}</div>
+    `;
+    els.shutterMeta.innerHTML = `
+      <div>Description: ${escapeHtml(meta.shutterstock.Description)}</div>
+      <div>Keywords (${meta.shutterstock.Keywords.length}): ${escapeHtml(meta.shutterstock.Keywords.join(', '))}</div>
+    `;
+    els.freepikMeta.innerHTML = `
+      <div>SEO Title: ${escapeHtml(meta.freepik.Title)}</div>
+      <div>SEO Tags: ${escapeHtml(meta.freepik.Tags.join(', '))}</div>
+    `;
+    els.dreamMeta.innerHTML = `
+      <div>Title: ${escapeHtml(meta.dreamstime.Title)}</div>
+      <div>Description: ${escapeHtml(meta.dreamstime.Description)}</div>
+      <div>Keywords (${meta.dreamstime.Keywords.length}): ${escapeHtml(meta.dreamstime.Keywords.join(', '))}</div>
+      <div>Category: ${escapeHtml(meta.dreamstime.Category)}</div>
+    `;
+
+    els.kwPreview.innerHTML = '';
+    meta.adobe.Keywords.slice(0, 15).forEach(k => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = k;
+      els.kwPreview.appendChild(chip);
+    });
+
+    if (asset.previewable && asset.url) {
+      if (asset.type === 'image' || asset.type === 'vector') {
+        els.preview.innerHTML = `<img src="${asset.url}" alt="${escapeAttr(asset.file.name)}" />`;
+      } else if (asset.type === 'video') {
+        els.preview.innerHTML = `<video controls src="${asset.url}"></video>`;
+      }
+    } else {
+      els.preview.innerHTML = `
+        <div>
+          <strong>${escapeHtml(asset.file.name)}</strong>
+          <div class="muted" style="margin-top:6px">Preview not available for this file in static test mode.</div>
+        </div>
+      `;
+    }
+  }
+
+  function processFiles(files) {
+    const arr = [...files].slice(0, 1000);
+    if (!arr.length) return;
+
+    let done = 0;
+    els.barFill.style.width = '0%';
+    toast(`${arr.length} file(s) loaded`, 'ok');
+
+    arr.forEach(file => {
+      if (!ACCEPTED.test(file.name)) return;
+      const type = detectType(file);
+      const previewable = !!(file.type.startsWith('image/') || file.type.startsWith('video/') || type === 'vector');
+      const asset = {
+        id: uid(),
+        file,
+        type,
+        previewable,
+        url: URL.createObjectURL(file),
+        status: 'Analyzed locally',
+        analysis: null,
+        metadata: null
+      };
+      asset.analysis = analyzeLocal(asset);
+      asset.metadata = buildMetadata(asset.analysis);
+      state.assets.push(asset);
+      done++;
+      els.barFill.style.width = `${Math.round(done / arr.length * 100)}%`;
+    });
+
+    if (!state.selectedId && state.assets[0]) state.selectedId = state.assets[0].id;
+    renderAssetList();
+    renderSelected();
+    toast('Batch processing finished', 'ok');
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function escapeAttr(str) {
+    return String(str ?? '').replace(/"/g, '&quot;');
+  }
+
+  function prettyBytes(bytes) {
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let i = 0;
+    let n = Number(bytes || 0);
+    while (n >= 1024 && i < units.length - 1) {
+      n /= 1024;
+      i++;
+    }
+    return `${n.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+  }
+
+  function csvEscape(value) {
+    return `"${String(value ?? '').replace(/"/g, '""')}"`;
+  }
+
+  function download(filename, content, mime) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function exportCSV() {
+    if (!state.assets.length) return toast('No asset to export', 'warn');
+
+    const adobe = ['Filename,Title,Keywords,Category'];
+    const shutter = ['Filename,Description,Keywords'];
+    const freepik = ['Filename,Title,Tags'];
+    const dream = ['Filename,Title,Description,Keywords,Category'];
+
+    state.assets.forEach(a => {
+      const m = a.metadata;
+      adobe.push([
+        csvEscape(a.file.name),
+        csvEscape(m.adobe.Title),
+        csvEscape(m.adobe.Keywords.join(', ')),
+        csvEscape(m.adobe.Category)
+      ].join(','));
+
+      shutter.push([
+        csvEscape(a.file.name),
+        csvEscape(m.shutterstock.Description),
+        csvEscape(m.shutterstock.Keywords.join(', '))
+      ].join(','));
+
+      freepik.push([
+        csvEscape(a.file.name),
+        csvEscape(m.freepik.Title),
+        csvEscape(m.freepik.Tags.join(', '))
+      ].join(','));
+
+      dream.push([
+        csvEscape(a.file.name),
+        csvEscape(m.dreamstime.Title),
+        csvEscape(m.dreamstime.Description),
+        csvEscape(m.dreamstime.Keywords.join(', ')),
+        csvEscape(m.dreamstime.Category)
+      ].join(','));
+    });
+
+    const bundle =
+      '--- ADOBE CSV ---\
+' + adobe.join('\
+') +
+      '\
+\
+--- SHUTTERSTOCK CSV ---\
+' + shutter.join('\
+') +
+      '\
+\
+--- FREEPIK CSV ---\
+' + freepik.join('\
+') +
+      '\
+\
+--- DREAMSTIME CSV ---\
+' + dream.join('\
+');
+
+    download('stockmeta-ai-pro-export.txt', bundle, 'text/plain;charset=utf-8');
+    toast('CSV export downloaded as text bundle', 'ok');
+  }
+
+  function exportJSON() {
+    if (!state.assets.length) return toast('No asset to export', 'warn');
+    const payload = state.assets.map(a => ({
+      filename: a.file.name,
+      type: a.type,
+      size: a.file.size,
+      analysis: a.analysis,
+      metadata: a.metadata,
+      warnings: {
+        compliance: complianceWarnings(a.analysis),
+        releases: releaseWarnings(a.analysis)
+      }
+    }));
+    download('stockmeta-ai-pro.json', JSON.stringify(payload, null, 2), 'application/json;charset=utf-8');
+    toast('JSON exported', 'ok');
+  }
+
+  function loadSample() {
+    const samples = [
+      {
+        id: uid(),
+        file: { name: 'business-team-meeting.jpg', size: 204800, type: 'image/jpeg' },
+        type: 'image',
+        previewable: false,
+        url: '',
+        status: 'Analyzed locally',
+        analysis: analyzeLocal({ file: { name: 'business-team-meeting.jpg' }, type: 'image' }),
+      },
+      {
+        id: uid(),
+        file: { name: 'modern-ui-icons.svg', size: 98200, type: 'image/svg+xml' },
+        type: 'vector',
+        previewable: false,
+        url: '',
+        status: 'Analyzed locally',
+        analysis: analyzeLocal({ file: { name: 'modern-ui-icons.svg' }, type: 'vector' }),
+      },
+      {
+        id: uid(),
+        file: { name: 'city-timelapse.mp4', size: 5024000, type: 'video/mp4' },
+        type: 'video',
+        previewable: false,
+        url: '',
+        status: 'Analyzed locally',
+        analysis: analyzeLocal({ file: { name: 'city-timelapse.mp4' }, type: 'video' }),
+      }
+    ];
+    samples.forEach(s => s.metadata = buildMetadata(s.analysis));
+    state.assets = samples;
+    state.selectedId = samples[0].id;
+    renderAssetList();
+    renderSelected();
+    toast('Sample assets loaded', 'ok');
+  }
+
+  function clearAll() {
+    state.assets.forEach(a => {
+      if (a.url) URL.revokeObjectURL(a.url);
+    });
+    state.assets = [];
+    state.selectedId = null;
+    els.assetList.innerHTML = '';
+    els.preview.innerHTML = `
+      <div>
+        <strong>No asset selected</strong>
+        <div class="muted" style="margin-top:6px">Select an uploaded file to inspect preview and metadata.</div>
+      </div>
+    `;
+    els.analysisBox.value = '';
+    els.adobeMeta.innerHTML = 'No data yet';
+    els.shutterMeta.innerHTML = 'No data yet';
+    els.freepikMeta.innerHTML = 'No data yet';
+    els.dreamMeta.innerHTML = 'No data yet';
+    els.alerts.innerHTML = '';
+    els.kwPreview.innerHTML = '';
+    els.batchText.textContent = 'No files loaded';
+    els.batchStatus.textContent = 'Waiting for files';
+    els.typeText.textContent = '—';
+    els.statusText.textContent = 'Idle';
+    els.barFill.style.width = '0%';
+    toast('Cleared', 'ok');
+  }
+
+  els.fileInput.addEventListener('change', e => processFiles(e.target.files));
+  ['dragenter','dragover'].forEach(evt => {
+    els.drop.addEventListener(evt, e => {
+      e.preventDefault();
+      els.drop.classList.add('drag');
+    });
+  });
+  ['dragleave','drop'].forEach(evt => {
+    els.drop.addEventListener(evt, e => {
+      e.preventDefault();
+      els.drop.classList.remove('drag');
+    });
+  });
+  els.drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+
+  els.themeBtn.addEventListener('click', () => {
+    state.theme = state.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', state.theme);
+    localStorage.setItem('sm_theme', state.theme);
+  });
+
+  els.clearBtn.addEventListener('click', clearAll);
+  els.sampleBtn.addEventListener('click', loadSample);
+  els.csvBtn.addEventListener('click', exportCSV);
+  els.jsonBtn.addEventListener('click', exportJSON);
+
+  renderAssetList();
+})();
+</script>
+</body>
+</html>
