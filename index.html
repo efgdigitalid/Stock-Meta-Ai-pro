@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>StockMeta AI Pro</title>
   <style>
     :root{
@@ -245,12 +246,6 @@
       box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .modal header{
-      position:static;
-      background:transparent;
-      backdrop-filter:none;
-      border-bottom:1px solid var(--line);
-    }
     .modal .content{padding:16px}
     .modal .content p{margin:0 0 10px 0;color:var(--muted);line-height:1.5}
     .toast-wrap{
@@ -301,7 +296,7 @@
     <div class="body">
       <div id="drop" class="drop">
         <strong>Drag & drop files here</strong>
-        <small>JPG, JPEG, PNG, WEBP, SVG, EPS, AI, MP4, MOV, WEBM. Up to 1000 files for batch testing.</small>
+        <small>JPG, JPEG, PNG, WEBP, SVG, EPS, AI, MP4, MOV, WEBM. Up to 1000 files.</small>
         <input id="fileInput" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.svg,.eps,.ai,.mp4,.mov,.webm,image/*,video/*" />
       </div>
 
@@ -309,9 +304,7 @@
 
       <div class="field">
         <label>Gemini API Key Status</label>
-        <div class="kv">
-          <div id="apiStatus">API key not set</div>
-        </div>
+        <div class="kv"><div id="apiStatus">API key not set</div></div>
       </div>
 
       <div class="section-gap"></div>
@@ -381,6 +374,7 @@
       <div class="footer-actions">
         <button id="csvBtn">Export CSV</button>
         <button id="jsonBtn" class="secondary">Export JSON</button>
+        <button id="testApiBtn" class="secondary">Test API</button>
       </div>
 
       <div class="section-gap"></div>
@@ -400,17 +394,12 @@
 
 <div id="apiOverlay" class="overlay">
   <div class="modal">
-    <header>
-      <div class="brand">
-        <strong>Enter Gemini API Key</strong>
-        <span>Key will only be kept in memory for this session</span>
-      </div>
-    </header>
+    <h3 style="margin:0;padding:14px 16px;border-bottom:1px solid var(--line)">Enter Gemini API Key</h3>
     <div class="content">
-      <p>Paste your Gemini API key here. The app will ask again after refresh/restart because the key is not stored in localStorage.</p>
+      <p>Paste your Gemini API key here. The key is kept only in browser memory for this session and will be lost after refresh.</p>
       <div class="field">
         <label>API Key</label>
-        <input id="apiKeyInput" type="password" placeholder="Paste Gemini API key" />
+        <input id="apiKeyInput" type="password" placeholder="Paste Gemini API key" autocomplete="off" />
       </div>
       <div class="section-gap"></div>
       <div class="footer-actions">
@@ -419,7 +408,7 @@
       </div>
       <div class="section-gap"></div>
       <div class="muted" style="font-size:12px;line-height:1.5">
-        Static deployment note: this is for testing. Because the app is fully static, the key is still visible in browser memory during the session.
+        For GitHub Pages static testing only. For production, move the API key to a serverless proxy.
       </div>
     </div>
   </div>
@@ -429,7 +418,7 @@
 
 <script>
 (() => {
-  const $ = (id) => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
   const els = {
     fileInput: $('fileInput'),
@@ -453,6 +442,7 @@
     sampleBtn: $('sampleBtn'),
     csvBtn: $('csvBtn'),
     jsonBtn: $('jsonBtn'),
+    testApiBtn: $('testApiBtn'),
     apiBtn: $('apiBtn'),
     apiOverlay: $('apiOverlay'),
     apiKeyInput: $('apiKeyInput'),
@@ -530,7 +520,6 @@
   function analyzeLocal(asset) {
     const words = normalizeWords(asset.file.name);
     const cleaned = words.filter(w => !isWeakKeyword(w));
-
     const primary =
       cleaned[0] ||
       (asset.type === 'video' ? 'video' : asset.type === 'vector' ? 'vector' : 'photo');
@@ -610,9 +599,7 @@
       ? analysis.main_subject
       : safeFallbackTitle(assetType);
 
-    const title = String(baseTitle)
-      .replace(/\bw/g, c => c.toUpperCase())
-      .trim();
+    const title = String(baseTitle).replace(/\bw/g, c => c.toUpperCase()).trim();
 
     return {
       adobe: {
@@ -785,20 +772,19 @@
       if (!ACCEPTED.test(file.name)) return;
       const type = detectType(file);
       const previewable = !!(file.type.startsWith('image/') || file.type.startsWith('video/') || type === 'vector');
+
       const asset = {
         id: uid(),
         file,
         type,
         previewable,
         url: URL.createObjectURL(file),
-        status: state.apiKey ? 'Ready for Gemini analysis' : 'Fallback local analysis',
-        analysis: null,
+        status: state.apiKey ? 'Queued for Gemini analysis' : 'Fallback local analysis',
+        analysis: analyzeLocal({ file, type }),
         metadata: null
       };
 
-      asset.analysis = analyzeLocal(asset);
       asset.metadata = buildMetadata(asset.analysis, asset.type);
-
       state.assets.push(asset);
       done++;
       els.barFill.style.width = `${Math.round(done / arr.length * 100)}%`;
@@ -808,6 +794,8 @@
     renderAssetList();
     renderSelected();
     toast('Batch processing finished', 'ok');
+
+    if (state.apiKey) reanalyzeAll();
   }
 
   function escapeHtml(str) {
@@ -925,7 +913,7 @@ Rules:
 
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      throw new Error(`Gemini API error ${res.status}: ${text.slice(0, 140)}`);
+      throw new Error(`Gemini API error ${res.status}: ${text.slice(0, 180)}`);
     }
 
     const json = await res.json();
@@ -1037,6 +1025,33 @@ Rules:
     reanalyzeAll();
   }
 
+  async function testApi() {
+    if (!state.apiKey) {
+      toast('Isi API key dulu', 'warn');
+      showApiOverlay();
+      return;
+    }
+
+    try {
+      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': state.apiKey
+        },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: 'Reply with only: OK' }] }],
+          generationConfig: { temperature: 0, responseMimeType: 'text/plain' }
+        })
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      toast('API key valid', 'ok');
+    } catch (e) {
+      toast('API test failed: ' + String(e.message || e), 'err');
+    }
+  }
+
   function exportCSV() {
     if (!state.assets.length) return toast('No asset to export', 'warn');
 
@@ -1128,7 +1143,7 @@ Rules:
         previewable: false,
         url: '',
         status: 'Fallback local analysis',
-        analysis: analyzeLocal({ file: { name: 'business-team-meeting.jpg' }, type: 'image' }),
+        analysis: analyzeLocal({ file: { name: 'business-team-meeting.jpg' }, type: 'image' })
       },
       {
         id: uid(),
@@ -1137,7 +1152,7 @@ Rules:
         previewable: false,
         url: '',
         status: 'Fallback local analysis',
-        analysis: analyzeLocal({ file: { name: 'modern-ui-icons.svg' }, type: 'vector' }),
+        analysis: analyzeLocal({ file: { name: 'modern-ui-icons.svg' }, type: 'vector' })
       },
       {
         id: uid(),
@@ -1146,7 +1161,7 @@ Rules:
         previewable: false,
         url: '',
         status: 'Fallback local analysis',
-        analysis: analyzeLocal({ file: { name: 'city-timelapse.mp4' }, type: 'video' }),
+        analysis: analyzeLocal({ file: { name: 'city-timelapse.mp4' }, type: 'video' })
       }
     ];
     samples.forEach(s => s.metadata = buildMetadata(s.analysis, s.type));
@@ -1158,9 +1173,7 @@ Rules:
   }
 
   function clearAll() {
-    state.assets.forEach(a => {
-      if (a.url) URL.revokeObjectURL(a.url);
-    });
+    state.assets.forEach(a => { if (a.url) URL.revokeObjectURL(a.url); });
     state.assets = [];
     state.selectedId = null;
     els.assetList.innerHTML = '';
@@ -1186,24 +1199,48 @@ Rules:
   }
 
   function initApiFlow() {
-    const stored = null;
-    state.apiKey = stored;
+    state.apiKey = null;
     setApiStatus();
-    if (!state.apiKey) {
-      toast('API key required to run Gemini analysis', 'warn');
-    }
+    toast('API key will be requested when needed', 'warn');
   }
 
-  els.fileInput.addEventListener('change', async e => {
-    processFiles(e.target.files);
-    if (state.apiKey) {
-      for (const asset of state.assets) {
-        if (asset.status === 'Fallback local analysis') {
-          await runAnalysisOnAsset(asset);
-        }
-      }
-    }
-  });
+  function processFiles(files) {
+    const arr = [...files].slice(0, 1000);
+    if (!arr.length) return;
+
+    let done = 0;
+    els.barFill.style.width = '0%';
+    toast(`${arr.length} file(s) loaded`, 'ok');
+
+    arr.forEach(file => {
+      if (!ACCEPTED.test(file.name)) return;
+      const type = detectType(file);
+      const previewable = !!(file.type.startsWith('image/') || file.type.startsWith('video/') || type === 'vector');
+      const asset = {
+        id: uid(),
+        file,
+        type,
+        previewable,
+        url: URL.createObjectURL(file),
+        status: state.apiKey ? 'Queued for Gemini analysis' : 'Fallback local analysis',
+        analysis: analyzeLocal({ file, type }),
+        metadata: null
+      };
+      asset.metadata = buildMetadata(asset.analysis, asset.type);
+      state.assets.push(asset);
+      done++;
+      els.barFill.style.width = `${Math.round(done / arr.length * 100)}%`;
+    });
+
+    if (!state.selectedId && state.assets[0]) state.selectedId = state.assets[0].id;
+    renderAssetList();
+    renderSelected();
+    toast('Batch processing finished', 'ok');
+
+    if (state.apiKey) reanalyzeAll();
+  }
+
+  els.fileInput.addEventListener('change', e => processFiles(e.target.files));
 
   ['dragenter','dragover'].forEach(evt => {
     els.drop.addEventListener(evt, e => {
@@ -1219,16 +1256,7 @@ Rules:
     });
   });
 
-  els.drop.addEventListener('drop', async e => {
-    processFiles(e.dataTransfer.files);
-    if (state.apiKey) {
-      for (const asset of state.assets) {
-        if (asset.status === 'Fallback local analysis') {
-          await runAnalysisOnAsset(asset);
-        }
-      }
-    }
-  });
+  els.drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
 
   els.themeBtn.addEventListener('click', () => {
     state.theme = state.theme === 'dark' ? 'light' : 'dark';
@@ -1240,6 +1268,7 @@ Rules:
   els.sampleBtn.addEventListener('click', loadSample);
   els.csvBtn.addEventListener('click', exportCSV);
   els.jsonBtn.addEventListener('click', exportJSON);
+  els.testApiBtn.addEventListener('click', testApi);
 
   els.apiBtn.addEventListener('click', showApiOverlay);
   els.cancelApiBtn.addEventListener('click', hideApiOverlay);
@@ -1252,49 +1281,50 @@ Rules:
     if (e.key === 'Escape') hideApiOverlay();
   });
 
-  function processFiles(files) {
-    const arr = [...files].slice(0, 1000);
-    if (!arr.length) return;
+  function showApiOverlay() {
+    els.apiKeyInput.value = '';
+    els.apiOverlay.classList.add('show');
+    setTimeout(() => els.apiKeyInput.focus(), 50);
+  }
 
-    let done = 0;
-    els.barFill.style.width = '0%';
-    toast(`${arr.length} file(s) loaded`, 'ok');
+  function hideApiOverlay() {
+    els.apiOverlay.classList.remove('show');
+  }
 
-    arr.forEach(file => {
-      if (!ACCEPTED.test(file.name)) return;
-      const type = detectType(file);
-      const previewable = !!(file.type.startsWith('image/') || file.type.startsWith('video/') || type === 'vector');
+  function setApiStatus() {
+    els.apiStatus.textContent = state.apiKey ? 'API key loaded for this session' : 'API key not set';
+    els.apiBtn.textContent = state.apiKey ? 'Change API Key' : 'Set API Key';
+  }
 
-      const asset = {
-        id: uid(),
-        file,
-        type,
-        previewable,
-        url: URL.createObjectURL(file),
-        status: state.apiKey ? 'Queued for Gemini analysis' : 'Fallback local analysis',
-        analysis: analyzeLocal({ file, type }),
-        metadata: null
-      };
-
-      asset.metadata = buildMetadata(asset.analysis, asset.type);
-      state.assets.push(asset);
-      done++;
-      els.barFill.style.width = `${Math.round(done / arr.length * 100)}%`;
-    });
-
-    if (!state.selectedId && state.assets[0]) state.selectedId = state.assets[0].id;
-    renderAssetList();
-    renderSelected();
-    toast('Batch processing finished', 'ok');
-
-    if (state.apiKey) {
-      reanalyzeAll();
+  function saveApiKey() {
+    const key = String(els.apiKeyInput.value || '').trim();
+    if (!key) {
+      toast('API key masih kosong', 'err');
+      return;
     }
+    state.apiKey = key;
+    setApiStatus();
+    hideApiOverlay();
+    toast('API key saved for this session', 'ok');
+    reanalyzeAll();
+  }
+
+  function initWarnings() {
+    setTimeout(() => {
+      if (!state.apiKey) {
+        setApiStatus();
+      }
+    }, 0);
   }
 
   initApiFlow();
+  initWarnings();
   renderAssetList();
   setApiStatus();
+
+  window.addEventListener('beforeunload', () => {
+    state.assets.forEach(a => { if (a.url) URL.revokeObjectURL(a.url); });
+  });
 })();
 </script>
 </body>
