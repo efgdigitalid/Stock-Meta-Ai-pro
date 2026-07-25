@@ -6,80 +6,158 @@
   <title>StockMeta AI Pro</title>
   <style>
     :root{
-      --bg:#08111f; --panel:#0f1a2d; --panel2:#14233d; --text:#e8eefc; --muted:#9aa9c7;
-      --line:#223453; --brand:#7c9cff; --brand2:#22c55e; --warn:#f59e0b; --err:#ef4444;
-      --chip:#1a2944; --okbg:rgba(34,197,94,.12); --warnbg:rgba(245,158,11,.12); --errbg:rgba(239,68,68,.12);
+      --bg:#07111f;
+      --panel:#0f1b2f;
+      --panel2:#14233d;
+      --text:#e8eefc;
+      --muted:#95a7c8;
+      --line:#223453;
+      --brand:#7c9cff;
+      --brand2:#22c55e;
+      --warn:#f59e0b;
+      --err:#ef4444;
+      --chip:#1a2944;
       --shadow:0 18px 40px rgba(0,0,0,.28);
     }
     :root[data-theme="light"]{
-      --bg:#f4f7fb; --panel:#ffffff; --panel2:#edf2fb; --text:#102033; --muted:#5f6f8e;
-      --line:#d8e1ef; --brand:#365dff; --brand2:#0f9f4f; --chip:#e8eef9;
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --panel2:#edf2fb;
+      --text:#102033;
+      --muted:#5f6f8e;
+      --line:#d8e1ef;
+      --brand:#365dff;
+      --brand2:#0f9f4f;
+      --chip:#e8eef9;
       --shadow:0 16px 30px rgba(29,45,76,.08);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
-      background:radial-gradient(1200px 700px at 20% -10%, rgba(124,156,255,.14), transparent 60%),
-                 radial-gradient(900px 500px at 100% 0%, rgba(34,197,94,.08), transparent 45%),
-                 linear-gradient(180deg,var(--bg),#07111f);
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% -10%, rgba(124,156,255,.14), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(34,197,94,.08), transparent 45%),
+        linear-gradient(180deg,var(--bg),#05101d);
       color:var(--text);
     }
     header{
-      position:sticky; top:0; z-index:20;
-      display:flex; justify-content:space-between; align-items:center; gap:12px;
-      padding:14px 16px; border-bottom:1px solid var(--line);
-      background:rgba(6,12,24,.82); backdrop-filter:blur(12px);
+      position:sticky;
+      top:0;
+      z-index:20;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background:rgba(6,12,24,.82);
+      backdrop-filter:blur(12px);
     }
     .brand{display:flex;flex-direction:column;gap:2px}
-    .brand strong{font-size:16px; letter-spacing:.2px}
+    .brand strong{font-size:16px;letter-spacing:.2px}
     .brand span{font-size:12px;color:var(--muted)}
     .actions{display:flex;gap:8px;flex-wrap:wrap}
-    button, input, select, textarea{font:inherit}
+    button,input,textarea,select{font:inherit}
     button{
-      border:0; border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:700;
-      background:var(--brand); color:#fff; transition:transform .15s ease, opacity .15s ease;
+      border:0;
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:700;
+      background:var(--brand);
+      color:#fff;
+      transition:transform .15s ease, opacity .15s ease;
     }
     button:hover{transform:translateY(-1px)}
-    button.secondary{background:var(--chip); color:var(--text); border:1px solid var(--line)}
-    button.ghost{background:transparent; color:var(--text); border:1px solid var(--line)}
+    button.secondary{background:var(--chip);color:var(--text);border:1px solid var(--line)}
+    button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+    button.danger{background:var(--err)}
     main{
-      display:grid; grid-template-columns:320px minmax(0,1fr) 360px; gap:14px;
-      padding:14px; min-height:calc(100vh - 72px);
+      display:grid;
+      grid-template-columns:320px minmax(0,1fr) 360px;
+      gap:14px;
+      padding:14px;
+      min-height:calc(100vh - 72px);
     }
     .panel{
       background:linear-gradient(180deg,var(--panel),rgba(255,255,255,.01));
-      border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
       min-height:100px;
     }
     .panel h2,.panel h3{
-      margin:0; padding:14px 16px; border-bottom:1px solid var(--line); font-size:15px;
+      margin:0;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      font-size:15px;
       background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);
     }
     .body{padding:14px 16px}
     .muted{color:var(--muted)}
     .drop{
-      border:2px dashed var(--line); border-radius:16px; padding:18px; text-align:center;
+      border:2px dashed var(--line);
+      border-radius:16px;
+      padding:18px;
+      text-align:center;
       background:var(--panel2);
     }
-    .drop.drag{border-color:var(--brand); background:rgba(124,156,255,.11)}
+    .drop.drag{border-color:var(--brand);background:rgba(124,156,255,.11)}
     .drop small{display:block;color:var(--muted);margin-top:6px;line-height:1.4}
-    input[type=file]{width:100%; margin-top:12px}
+    input[type=file]{width:100%;margin-top:12px}
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-top:10px;
+    }
+    .field label{font-size:12px;color:var(--muted)}
+    .field input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--panel2);
+      color:var(--text);
+      outline:none;
+    }
     .bar{
-      height:12px; background:var(--panel2); border:1px solid var(--line); border-radius:999px; overflow:hidden;
+      height:12px;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:999px;
+      overflow:hidden;
     }
     .bar > div{
-      height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--brand2));
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--brand),var(--brand2));
       transition:width .25s ease;
     }
     .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .kv{
-      background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:10px;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px;
     }
     .kv strong{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    .list{display:flex;flex-direction:column;gap:8px;max-height:44vh;overflow:auto}
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height:44vh;
+      overflow:auto;
+    }
     .asset{
-      border:1px solid var(--line); background:var(--panel2); border-radius:14px; padding:10px; cursor:pointer;
+      border:1px solid var(--line);
+      background:var(--panel2);
+      border-radius:14px;
+      padding:10px;
+      cursor:pointer;
     }
     .asset.active{outline:2px solid var(--brand)}
     .asset .row{display:flex;justify-content:space-between;gap:8px;align-items:center}
@@ -88,37 +166,111 @@
     .scroll{max-height:38vh;overflow:auto}
     .chips{display:flex;flex-wrap:wrap;gap:8px}
     .chip{
-      display:inline-flex; align-items:center; gap:6px;
-      background:var(--chip); border:1px solid var(--line); border-radius:999px;
-      padding:6px 10px; font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--chip);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
     }
     .notice{
-      border-radius:12px; padding:10px 12px; margin-bottom:8px; font-size:13px; line-height:1.45;
+      border-radius:12px;
+      padding:10px 12px;
+      margin-bottom:8px;
+      font-size:13px;
+      line-height:1.45;
     }
-    .notice.warn{background:var(--warnbg); border:1px solid rgba(245,158,11,.35); color:#f7c96c}
-    .notice.err{background:var(--errbg); border:1px solid rgba(239,68,68,.35); color:#ff9b9b}
-    .notice.ok{background:var(--okbg); border:1px solid rgba(34,197,94,.35); color:#9cf0bd}
+    .notice.warn{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);color:#f7c96c}
+    .notice.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ff9b9b}
+    .notice.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#9cf0bd}
     textarea{
-      width:100%; min-height:110px; resize:vertical; padding:10px; border-radius:12px;
-      border:1px solid var(--line); background:var(--panel2); color:var(--text);
+      width:100%;
+      min-height:110px;
+      resize:vertical;
+      padding:10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--panel2);
+      color:var(--text);
     }
     .preview{
-      display:flex; align-items:center; justify-content:center; min-height:320px; text-align:center;
-      border:1px solid var(--line); border-radius:14px; background:var(--panel2); overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:320px;
+      text-align:center;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:var(--panel2);
+      overflow:hidden;
     }
     .preview img,.preview video{
-      max-width:100%; max-height:360px; width:auto; height:auto; object-fit:contain; display:block;
+      max-width:100%;
+      max-height:360px;
+      width:auto;
+      height:auto;
+      object-fit:contain;
+      display:block;
     }
     .footer-actions{display:flex;gap:8px;flex-wrap:wrap}
     .section-gap{height:12px}
     .badge{
-      display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px;
-      background:var(--chip); border:1px solid var(--line); font-size:12px; color:var(--text)
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      background:var(--chip);
+      border:1px solid var(--line);
+      font-size:12px;
+      color:var(--text)
     }
-    .toast-wrap{position:fixed;right:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;z-index:40}
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:60;
+      padding:16px;
+    }
+    .overlay.show{display:flex}
+    .modal{
+      width:min(560px,100%);
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .modal header{
+      position:static;
+      background:transparent;
+      backdrop-filter:none;
+      border-bottom:1px solid var(--line);
+    }
+    .modal .content{padding:16px}
+    .modal .content p{margin:0 0 10px 0;color:var(--muted);line-height:1.5}
+    .toast-wrap{
+      position:fixed;
+      right:14px;
+      bottom:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      z-index:80;
+    }
     .toast{
-      min-width:240px; max-width:380px; padding:12px 14px; border-radius:14px;
-      border:1px solid var(--line); background:var(--panel); box-shadow:var(--shadow); font-size:13px;
+      min-width:240px;
+      max-width:380px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      box-shadow:var(--shadow);
+      font-size:13px;
     }
     .toast.ok{border-color:rgba(34,197,94,.35)}
     .toast.err{border-color:rgba(239,68,68,.35)}
@@ -133,12 +285,13 @@
 <header>
   <div class="brand">
     <strong>StockMeta AI Pro</strong>
-    <span>1-file static test version for GitHub Pages / Netlify</span>
+    <span>Static 1-file version with on-demand API key</span>
   </div>
   <div class="actions">
     <button id="themeBtn" class="secondary">Toggle Theme</button>
     <button id="clearBtn" class="ghost">Clear</button>
     <button id="sampleBtn" class="secondary">Load Sample</button>
+    <button id="apiBtn">Set API Key</button>
   </div>
 </header>
 
@@ -151,7 +304,18 @@
         <small>JPG, JPEG, PNG, WEBP, SVG, EPS, AI, MP4, MOV, WEBM. Up to 1000 files for batch testing.</small>
         <input id="fileInput" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.svg,.eps,.ai,.mp4,.mov,.webm,image/*,video/*" />
       </div>
+
       <div class="section-gap"></div>
+
+      <div class="field">
+        <label>Gemini API Key Status</label>
+        <div class="kv">
+          <div id="apiStatus">API key not set</div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
       <div class="bar"><div id="barFill"></div></div>
       <div id="batchText" class="muted" style="margin-top:8px">No files loaded</div>
       <div class="section-gap"></div>
@@ -168,12 +332,16 @@
           <div class="muted" style="margin-top:6px">Select an uploaded file to inspect preview and metadata.</div>
         </div>
       </div>
+
       <div class="section-gap"></div>
+
       <div class="meta-grid">
         <div class="kv"><strong>Status</strong><div id="statusText">Idle</div></div>
         <div class="kv"><strong>Type</strong><div id="typeText">—</div></div>
       </div>
+
       <div class="section-gap"></div>
+
       <div class="kv">
         <strong>Analysis JSON</strong>
         <textarea id="analysisBox" readonly></textarea>
@@ -230,11 +398,39 @@
   </section>
 </main>
 
+<div id="apiOverlay" class="overlay">
+  <div class="modal">
+    <header>
+      <div class="brand">
+        <strong>Enter Gemini API Key</strong>
+        <span>Key will only be kept in memory for this session</span>
+      </div>
+    </header>
+    <div class="content">
+      <p>Paste your Gemini API key here. The app will ask again after refresh/restart because the key is not stored in localStorage.</p>
+      <div class="field">
+        <label>API Key</label>
+        <input id="apiKeyInput" type="password" placeholder="Paste Gemini API key" />
+      </div>
+      <div class="section-gap"></div>
+      <div class="footer-actions">
+        <button id="saveApiBtn">Save Key</button>
+        <button id="cancelApiBtn" class="secondary">Cancel</button>
+      </div>
+      <div class="section-gap"></div>
+      <div class="muted" style="font-size:12px;line-height:1.5">
+        Static deployment note: this is for testing. Because the app is fully static, the key is still visible in browser memory during the session.
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toastWrap" class="toast-wrap"></div>
 
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
+
   const els = {
     fileInput: $('fileInput'),
     drop: $('drop'),
@@ -257,6 +453,12 @@
     sampleBtn: $('sampleBtn'),
     csvBtn: $('csvBtn'),
     jsonBtn: $('jsonBtn'),
+    apiBtn: $('apiBtn'),
+    apiOverlay: $('apiOverlay'),
+    apiKeyInput: $('apiKeyInput'),
+    saveApiBtn: $('saveApiBtn'),
+    cancelApiBtn: $('cancelApiBtn'),
+    apiStatus: $('apiStatus'),
     toastWrap: $('toastWrap'),
   };
 
@@ -264,6 +466,7 @@
     assets: [],
     selectedId: null,
     theme: localStorage.getItem('sm_theme') || 'dark',
+    apiKey: null
   };
 
   document.documentElement.setAttribute('data-theme', state.theme);
@@ -313,29 +516,39 @@
   function isWeakKeyword(k) {
     const weak = new Set([
       'image','photo','picture','graphic','illustration','template','background','asset',
-      'file','stock','art','design','object','thing','example','sample'
+      'file','stock','art','design','object','thing','example','sample','download'
     ]);
     return weak.has(String(k).toLowerCase());
   }
 
+  function safeFallbackTitle(type) {
+    if (type === 'video') return 'Generic Stock Video';
+    if (type === 'vector') return 'Generic Vector Illustration';
+    return 'Generic Stock Photo';
+  }
+
   function analyzeLocal(asset) {
     const words = normalizeWords(asset.file.name);
-    const primary = words.find(Boolean) || 'stock asset';
+    const cleaned = words.filter(w => !isWeakKeyword(w));
+
+    const primary =
+      cleaned[0] ||
+      (asset.type === 'video' ? 'video' : asset.type === 'vector' ? 'vector' : 'photo');
+
     const baseConcepts = [
-      'business','marketing','technology','creative','modern','digital','commercial',
-      'lifestyle','minimal','studio','web','editorial'
+      'business','marketing','technology','creative','modern','digital',
+      'commercial','lifestyle','minimal','studio','web','editorial'
     ];
-    const concepts = uniq([...words.slice(0, 5), ...baseConcepts.slice(0, 4)]).filter(k => !isWeakKeyword(k));
-    const objects = uniq(words.slice(0, 8)).filter(k => !isWeakKeyword(k));
+
     const colors = /blue|red|green|black|white|yellow|orange|pink|purple|gray|grey|brown|beige/i.exec(asset.file.name);
-    const category = asset.type === 'video' ? 'Video' : asset.type === 'vector' ? 'Vector' : 'Photo';
+
     const analysis = {
       main_subject: primary,
-      concepts,
-      objects,
+      concepts: uniq([...cleaned.slice(0, 4), ...baseConcepts]).filter(k => !isWeakKeyword(k)),
+      objects: uniq(cleaned.slice(0, 8)).filter(k => !isWeakKeyword(k)),
       colors: colors ? [colors[0].toLowerCase()] : ['mixed'],
-      category,
-      commercial_usage: 'Commercial stock use, marketing, web, social media, and business content.',
+      category: asset.type === 'video' ? 'Video' : asset.type === 'vector' ? 'Vector' : 'Photo',
+      commercial_usage: 'Commercial stock use, marketing, web, social media, and business content.'
     };
 
     if (asset.type === 'video') {
@@ -346,7 +559,7 @@
         orientation: 'Unknown',
         main_scenes: [primary],
         motion_type: 'Unknown',
-        commercial_concepts: concepts.slice(0, 6),
+        commercial_concepts: analysis.concepts.slice(0, 6)
       });
     }
 
@@ -358,7 +571,7 @@
         filled_style: false,
         gradient_style: false,
         '3d_style': false,
-        design_category: 'Graphic design',
+        design_category: 'Graphic design'
       });
     }
 
@@ -391,29 +604,35 @@
     return cleaned.slice(0, 50);
   }
 
-  function buildMetadata(analysis) {
+  function buildMetadata(analysis, assetType) {
     const keywords = rankKeywords(analysis);
-    const title = (analysis.main_subject || analysis.category || 'stock asset').replace(/\bw/g, c => c.toUpperCase());
+    const baseTitle = analysis.main_subject && !isWeakKeyword(analysis.main_subject)
+      ? analysis.main_subject
+      : safeFallbackTitle(assetType);
+
+    const title = String(baseTitle)
+      .replace(/\bw/g, c => c.toUpperCase())
+      .trim();
 
     return {
       adobe: {
         Title: title,
         Keywords: keywords.slice(0, 49),
-        Category: analysis.category || 'Other',
+        Category: analysis.category || 'Other'
       },
       shutterstock: {
-        Description: `${title}. ${analysis.commercial_usage || ''}`.trim(),
-        Keywords: keywords.slice(0, 50),
+        Description: `${title}. ${analysis.commercial_usage}`.trim(),
+        Keywords: keywords.slice(0, 50)
       },
       freepik: {
         Title: `${title} Stock`,
-        Tags: keywords.slice(0, 20),
+        Tags: keywords.slice(0, 20)
       },
       dreamstime: {
         Title: title,
         Description: analysis.commercial_usage || '',
         Keywords: keywords.slice(0, 50),
-        Category: analysis.category || 'Other',
+        Category: analysis.category || 'Other'
       }
     };
   }
@@ -446,7 +665,7 @@
   function setAlerts(warns, releases) {
     els.alerts.innerHTML = '';
     if (!warns.length && !releases.length) {
-      els.alerts.innerHTML = '<div class="notice ok">No immediate compliance or release risks detected in static test mode.</div>';
+      els.alerts.innerHTML = '<div class="notice ok">No immediate compliance or release risks detected in static mode.</div>';
       return;
     }
     warns.forEach(w => {
@@ -548,7 +767,7 @@
       els.preview.innerHTML = `
         <div>
           <strong>${escapeHtml(asset.file.name)}</strong>
-          <div class="muted" style="margin-top:6px">Preview not available for this file in static test mode.</div>
+          <div class="muted" style="margin-top:6px">Preview not available for this file in static mode.</div>
         </div>
       `;
     }
@@ -572,12 +791,14 @@
         type,
         previewable,
         url: URL.createObjectURL(file),
-        status: 'Analyzed locally',
+        status: state.apiKey ? 'Ready for Gemini analysis' : 'Fallback local analysis',
         analysis: null,
         metadata: null
       };
+
       asset.analysis = analyzeLocal(asset);
-      asset.metadata = buildMetadata(asset.analysis);
+      asset.metadata = buildMetadata(asset.analysis, asset.type);
+
       state.assets.push(asset);
       done++;
       els.barFill.style.width = `${Math.round(done / arr.length * 100)}%`;
@@ -628,6 +849,194 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  async function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || '');
+        const base64 = result.split(',')[1] || '';
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function analyzeWithGemini(asset) {
+    if (!state.apiKey) throw new Error('API key belum diisi');
+
+    const mimeType = asset.file.type || (
+      asset.type === 'video' ? 'video/mp4' :
+      asset.type === 'vector' ? 'image/svg+xml' :
+      'image/jpeg'
+    );
+
+    const base64Data = await fileToBase64(asset.file);
+
+    const prompt = `
+You are a professional stock metadata analyst.
+Analyze the uploaded asset for stock licensing.
+Return STRICT JSON only with this structure:
+{
+  "main_subject":"",
+  "concepts":[],
+  "objects":[],
+  "colors":[],
+  "category":"",
+  "commercial_usage":"",
+  "emotions":[],
+  "background":"",
+  "composition":"",
+  "notes":[]
+}
+Rules:
+- English only.
+- No markdown.
+- No extra text.
+- Prioritize commercial stock relevance.
+- Avoid brand names, trademarks, and copyrighted labels unless clearly visible for compliance detection.
+`;
+
+    const body = {
+      contents: [{
+        role: 'user',
+        parts: [
+          { text: prompt },
+          { inline_data: { mime_type: mimeType, data: base64Data } }
+        ]
+      }],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: 'application/json'
+      }
+    };
+
+    const res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': state.apiKey
+        },
+        body: JSON.stringify(body)
+      }
+    );
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`Gemini API error ${res.status}: ${text.slice(0, 140)}`);
+    }
+
+    const json = await res.json();
+    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    return JSON.parse(text);
+  }
+
+  function mergeGeminiAnalysis(asset, gemini) {
+    const analysis = {
+      main_subject: gemini.main_subject || asset.analysis.main_subject,
+      concepts: uniq([...(gemini.concepts || []), ...(asset.analysis.concepts || [])]),
+      objects: uniq([...(gemini.objects || []), ...(asset.analysis.objects || [])]),
+      colors: uniq([...(gemini.colors || []), ...(asset.analysis.colors || [])]),
+      category: gemini.category || asset.analysis.category,
+      commercial_usage: gemini.commercial_usage || asset.analysis.commercial_usage,
+      emotions: uniq(gemini.emotions || []),
+      background: gemini.background || '',
+      composition: gemini.composition || '',
+      notes: uniq(gemini.notes || [])
+    };
+
+    if (asset.type === 'video') {
+      analysis.duration = gemini.duration || 'Unknown';
+      analysis.fps = gemini.fps || 'Unknown';
+      analysis.resolution = gemini.resolution || 'Unknown';
+      analysis.orientation = gemini.orientation || 'Unknown';
+      analysis.main_scenes = uniq(gemini.main_scenes || []);
+      analysis.motion_type = gemini.motion_type || 'Unknown';
+      analysis.commercial_concepts = uniq(gemini.commercial_concepts || []);
+    }
+
+    if (asset.type === 'vector') {
+      analysis.icon_style = gemini.icon_style || 'Unknown';
+      analysis.flat_style = gemini.flat_style ?? false;
+      analysis.outline_style = gemini.outline_style ?? false;
+      analysis.filled_style = gemini.filled_style ?? false;
+      analysis.gradient_style = gemini.gradient_style ?? false;
+      analysis['3d_style'] = gemini['3d_style'] ?? false;
+      analysis.design_category = gemini.design_category || 'Graphic design';
+    }
+
+    return analysis;
+  }
+
+  async function runAnalysisOnAsset(asset) {
+    asset.status = state.apiKey ? 'Analyzing with Gemini...' : 'Fallback local analysis';
+    renderAssetList();
+    renderSelected();
+
+    if (!state.apiKey) {
+      asset.analysis = analyzeLocal(asset);
+      asset.metadata = buildMetadata(asset.analysis, asset.type);
+      asset.status = 'Fallback local analysis';
+      renderAssetList();
+      renderSelected();
+      return;
+    }
+
+    try {
+      const gemini = await analyzeWithGemini(asset);
+      asset.analysis = mergeGeminiAnalysis(asset, gemini);
+      asset.metadata = buildMetadata(asset.analysis, asset.type);
+      asset.status = 'Gemini analysis complete';
+      toast(`Analyzed: ${asset.file.name}`, 'ok');
+    } catch (err) {
+      asset.analysis = analyzeLocal(asset);
+      asset.metadata = buildMetadata(asset.analysis, asset.type);
+      asset.status = 'Gemini failed, fallback used';
+      toast(String(err.message || err), 'warn');
+    }
+
+    renderAssetList();
+    renderSelected();
+  }
+
+  async function reanalyzeAll() {
+    if (!state.assets.length) return;
+    for (const asset of state.assets) {
+      await runAnalysisOnAsset(asset);
+    }
+    toast('All assets processed', 'ok');
+  }
+
+  function showApiOverlay() {
+    els.apiKeyInput.value = '';
+    els.apiOverlay.classList.add('show');
+    setTimeout(() => els.apiKeyInput.focus(), 50);
+  }
+
+  function hideApiOverlay() {
+    els.apiOverlay.classList.remove('show');
+  }
+
+  function setApiStatus() {
+    els.apiStatus.textContent = state.apiKey ? 'API key loaded for this session' : 'API key not set';
+    els.apiBtn.textContent = state.apiKey ? 'Change API Key' : 'Set API Key';
+  }
+
+  function saveApiKey() {
+    const key = String(els.apiKeyInput.value || '').trim();
+    if (!key) {
+      toast('API key masih kosong', 'err');
+      return;
+    }
+    state.apiKey = key;
+    setApiStatus();
+    hideApiOverlay();
+    toast('API key saved for this session', 'ok');
+    reanalyzeAll();
+  }
+
   function exportCSV() {
     if (!state.assets.length) return toast('No asset to export', 'warn');
 
@@ -667,23 +1076,23 @@
     });
 
     const bundle =
-      '--- ADOBE CSV ---\
-' + adobe.join('\
+      '--- ADOBE CSV ---
+' + adobe.join('
 ') +
-      '\
-\
---- SHUTTERSTOCK CSV ---\
-' + shutter.join('\
+      '
+
+--- SHUTTERSTOCK CSV ---
+' + shutter.join('
 ') +
-      '\
-\
---- FREEPIK CSV ---\
-' + freepik.join('\
+      '
+
+--- FREEPIK CSV ---
+' + freepik.join('
 ') +
-      '\
-\
---- DREAMSTIME CSV ---\
-' + dream.join('\
+      '
+
+--- DREAMSTIME CSV ---
+' + dream.join('
 ');
 
     download('stockmeta-ai-pro-export.txt', bundle, 'text/plain;charset=utf-8');
@@ -692,6 +1101,7 @@
 
   function exportJSON() {
     if (!state.assets.length) return toast('No asset to export', 'warn');
+
     const payload = state.assets.map(a => ({
       filename: a.file.name,
       type: a.type,
@@ -701,8 +1111,10 @@
       warnings: {
         compliance: complianceWarnings(a.analysis),
         releases: releaseWarnings(a.analysis)
-      }
+      },
+      status: a.status
     }));
+
     download('stockmeta-ai-pro.json', JSON.stringify(payload, null, 2), 'application/json;charset=utf-8');
     toast('JSON exported', 'ok');
   }
@@ -715,7 +1127,7 @@
         type: 'image',
         previewable: false,
         url: '',
-        status: 'Analyzed locally',
+        status: 'Fallback local analysis',
         analysis: analyzeLocal({ file: { name: 'business-team-meeting.jpg' }, type: 'image' }),
       },
       {
@@ -724,7 +1136,7 @@
         type: 'vector',
         previewable: false,
         url: '',
-        status: 'Analyzed locally',
+        status: 'Fallback local analysis',
         analysis: analyzeLocal({ file: { name: 'modern-ui-icons.svg' }, type: 'vector' }),
       },
       {
@@ -733,11 +1145,11 @@
         type: 'video',
         previewable: false,
         url: '',
-        status: 'Analyzed locally',
+        status: 'Fallback local analysis',
         analysis: analyzeLocal({ file: { name: 'city-timelapse.mp4' }, type: 'video' }),
       }
     ];
-    samples.forEach(s => s.metadata = buildMetadata(s.analysis));
+    samples.forEach(s => s.metadata = buildMetadata(s.analysis, s.type));
     state.assets = samples;
     state.selectedId = samples[0].id;
     renderAssetList();
@@ -773,20 +1185,50 @@
     toast('Cleared', 'ok');
   }
 
-  els.fileInput.addEventListener('change', e => processFiles(e.target.files));
+  function initApiFlow() {
+    const stored = null;
+    state.apiKey = stored;
+    setApiStatus();
+    if (!state.apiKey) {
+      toast('API key required to run Gemini analysis', 'warn');
+    }
+  }
+
+  els.fileInput.addEventListener('change', async e => {
+    processFiles(e.target.files);
+    if (state.apiKey) {
+      for (const asset of state.assets) {
+        if (asset.status === 'Fallback local analysis') {
+          await runAnalysisOnAsset(asset);
+        }
+      }
+    }
+  });
+
   ['dragenter','dragover'].forEach(evt => {
     els.drop.addEventListener(evt, e => {
       e.preventDefault();
       els.drop.classList.add('drag');
     });
   });
+
   ['dragleave','drop'].forEach(evt => {
     els.drop.addEventListener(evt, e => {
       e.preventDefault();
       els.drop.classList.remove('drag');
     });
   });
-  els.drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+
+  els.drop.addEventListener('drop', async e => {
+    processFiles(e.dataTransfer.files);
+    if (state.apiKey) {
+      for (const asset of state.assets) {
+        if (asset.status === 'Fallback local analysis') {
+          await runAnalysisOnAsset(asset);
+        }
+      }
+    }
+  });
 
   els.themeBtn.addEventListener('click', () => {
     state.theme = state.theme === 'dark' ? 'light' : 'dark';
@@ -799,7 +1241,60 @@
   els.csvBtn.addEventListener('click', exportCSV);
   els.jsonBtn.addEventListener('click', exportJSON);
 
+  els.apiBtn.addEventListener('click', showApiOverlay);
+  els.cancelApiBtn.addEventListener('click', hideApiOverlay);
+  els.saveApiBtn.addEventListener('click', saveApiKey);
+  els.apiOverlay.addEventListener('click', e => {
+    if (e.target === els.apiOverlay) hideApiOverlay();
+  });
+  els.apiKeyInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveApiKey();
+    if (e.key === 'Escape') hideApiOverlay();
+  });
+
+  function processFiles(files) {
+    const arr = [...files].slice(0, 1000);
+    if (!arr.length) return;
+
+    let done = 0;
+    els.barFill.style.width = '0%';
+    toast(`${arr.length} file(s) loaded`, 'ok');
+
+    arr.forEach(file => {
+      if (!ACCEPTED.test(file.name)) return;
+      const type = detectType(file);
+      const previewable = !!(file.type.startsWith('image/') || file.type.startsWith('video/') || type === 'vector');
+
+      const asset = {
+        id: uid(),
+        file,
+        type,
+        previewable,
+        url: URL.createObjectURL(file),
+        status: state.apiKey ? 'Queued for Gemini analysis' : 'Fallback local analysis',
+        analysis: analyzeLocal({ file, type }),
+        metadata: null
+      };
+
+      asset.metadata = buildMetadata(asset.analysis, asset.type);
+      state.assets.push(asset);
+      done++;
+      els.barFill.style.width = `${Math.round(done / arr.length * 100)}%`;
+    });
+
+    if (!state.selectedId && state.assets[0]) state.selectedId = state.assets[0].id;
+    renderAssetList();
+    renderSelected();
+    toast('Batch processing finished', 'ok');
+
+    if (state.apiKey) {
+      reanalyzeAll();
+    }
+  }
+
+  initApiFlow();
   renderAssetList();
+  setApiStatus();
 })();
 </script>
 </body>
