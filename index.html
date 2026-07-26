@@ -3,34 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>StockMeta AI Pro</title>
   <style>
     :root{
-      --bg:#07111f;
-      --panel:#0f1b2f;
-      --panel2:#14233d;
-      --text:#e8eefc;
-      --muted:#95a7c8;
-      --line:#223453;
-      --brand:#7c9cff;
-      --brand2:#22c55e;
-      --warn:#f59e0b;
-      --err:#ef4444;
-      --chip:#1a2944;
-      --shadow:0 18px 40px rgba(0,0,0,.28);
+      --bg:#07111f; --panel:#0f1b2f; --panel2:#14233d; --text:#e8eefc; --muted:#95a7c8;
+      --line:#223453; --brand:#7c9cff; --brand2:#22c55e; --warn:#f59e0b; --err:#ef4444;
+      --chip:#1a2944; --shadow:0 18px 40px rgba(0,0,0,.28);
     }
     :root[data-theme="light"]{
-      --bg:#f4f7fb;
-      --panel:#ffffff;
-      --panel2:#edf2fb;
-      --text:#102033;
-      --muted:#5f6f8e;
-      --line:#d8e1ef;
-      --brand:#365dff;
-      --brand2:#0f9f4f;
-      --chip:#e8eef9;
-      --shadow:0 16px 30px rgba(29,45,76,.08);
+      --bg:#f4f7fb; --panel:#ffffff; --panel2:#edf2fb; --text:#102033; --muted:#5f6f8e;
+      --line:#d8e1ef; --brand:#365dff; --brand2:#0f9f4f; --chip:#e8eef9; --shadow:0 16px 30px rgba(29,45,76,.08);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -44,17 +26,10 @@
       color:var(--text);
     }
     header{
-      position:sticky;
-      top:0;
-      z-index:20;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      background:rgba(6,12,24,.82);
-      backdrop-filter:blur(12px);
+      position:sticky; top:0; z-index:20;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding:14px 16px; border-bottom:1px solid var(--line);
+      background:rgba(6,12,24,.82); backdrop-filter:blur(12px);
     }
     .brand{display:flex;flex-direction:column;gap:2px}
     .brand strong{font-size:16px;letter-spacing:.2px}
@@ -62,218 +37,71 @@
     .actions{display:flex;gap:8px;flex-wrap:wrap}
     button,input,textarea,select{font:inherit}
     button{
-      border:0;
-      border-radius:12px;
-      padding:10px 12px;
-      cursor:pointer;
-      font-weight:700;
-      background:var(--brand);
-      color:#fff;
-      transition:transform .15s ease, opacity .15s ease;
+      border:0; border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:700;
+      background:var(--brand); color:#fff; transition:transform .15s ease, opacity .15s ease;
     }
     button:hover{transform:translateY(-1px)}
     button.secondary{background:var(--chip);color:var(--text);border:1px solid var(--line)}
     button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-    button.danger{background:var(--err)}
     main{
-      display:grid;
-      grid-template-columns:320px minmax(0,1fr) 360px;
-      gap:14px;
-      padding:14px;
-      min-height:calc(100vh - 72px);
+      display:grid; grid-template-columns:320px minmax(0,1fr) 360px; gap:14px;
+      padding:14px; min-height:calc(100vh - 72px);
     }
     .panel{
       background:linear-gradient(180deg,var(--panel),rgba(255,255,255,.01));
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      min-height:100px;
+      border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); overflow:hidden; min-height:100px;
     }
     .panel h2,.panel h3{
-      margin:0;
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      font-size:15px;
+      margin:0; padding:14px 16px; border-bottom:1px solid var(--line); font-size:15px;
       background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);
     }
     .body{padding:14px 16px}
     .muted{color:var(--muted)}
-    .drop{
-      border:2px dashed var(--line);
-      border-radius:16px;
-      padding:18px;
-      text-align:center;
-      background:var(--panel2);
-    }
+    .drop{border:2px dashed var(--line); border-radius:16px; padding:18px; text-align:center; background:var(--panel2)}
     .drop.drag{border-color:var(--brand);background:rgba(124,156,255,.11)}
     .drop small{display:block;color:var(--muted);margin-top:6px;line-height:1.4}
     input[type=file]{width:100%;margin-top:12px}
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      margin-top:10px;
-    }
+    .field{display:flex;flex-direction:column;gap:6px;margin-top:10px}
     .field label{font-size:12px;color:var(--muted)}
     .field input{
-      width:100%;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--panel2);
-      color:var(--text);
-      outline:none;
+      width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+      background:var(--panel2); color:var(--text); outline:none;
     }
-    .bar{
-      height:12px;
-      background:var(--panel2);
-      border:1px solid var(--line);
-      border-radius:999px;
-      overflow:hidden;
-    }
-    .bar > div{
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,var(--brand),var(--brand2));
-      transition:width .25s ease;
-    }
+    .bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+    .bar > div{height:100%;width:0%;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .25s ease}
     .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .kv{
-      background:var(--panel2);
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:10px;
-    }
+    .kv{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px}
     .kv strong{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      max-height:44vh;
-      overflow:auto;
-    }
-    .asset{
-      border:1px solid var(--line);
-      background:var(--panel2);
-      border-radius:14px;
-      padding:10px;
-      cursor:pointer;
-    }
+    .list{display:flex;flex-direction:column;gap:8px;max-height:44vh;overflow:auto}
+    .asset{border:1px solid var(--line);background:var(--panel2);border-radius:14px;padding:10px;cursor:pointer}
     .asset.active{outline:2px solid var(--brand)}
     .asset .row{display:flex;justify-content:space-between;gap:8px;align-items:center}
     .asset .name{font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .asset .sub{font-size:12px;color:var(--muted);margin-top:4px}
     .scroll{max-height:38vh;overflow:auto}
     .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      background:var(--chip);
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-    }
-    .notice{
-      border-radius:12px;
-      padding:10px 12px;
-      margin-bottom:8px;
-      font-size:13px;
-      line-height:1.45;
-    }
+    .chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px}
+    .notice{border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13px;line-height:1.45}
     .notice.warn{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);color:#f7c96c}
     .notice.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ff9b9b}
     .notice.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#9cf0bd}
-    textarea{
-      width:100%;
-      min-height:110px;
-      resize:vertical;
-      padding:10px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--panel2);
-      color:var(--text);
-    }
-    .preview{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:320px;
-      text-align:center;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:var(--panel2);
-      overflow:hidden;
-    }
-    .preview img,.preview video{
-      max-width:100%;
-      max-height:360px;
-      width:auto;
-      height:auto;
-      object-fit:contain;
-      display:block;
-    }
+    textarea{width:100%;min-height:110px;resize:vertical;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--text)}
+    .preview{display:flex;align-items:center;justify-content:center;min-height:320px;text-align:center;border:1px solid var(--line);border-radius:14px;background:var(--panel2);overflow:hidden}
+    .preview img,.preview video{max-width:100%;max-height:360px;width:auto;height:auto;object-fit:contain;display:block}
     .footer-actions{display:flex;gap:8px;flex-wrap:wrap}
     .section-gap{height:12px}
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      padding:4px 8px;
-      border-radius:999px;
-      background:var(--chip);
-      border:1px solid var(--line);
-      font-size:12px;
-      color:var(--text)
-    }
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:60;
-      padding:16px;
-    }
+    .badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;color:var(--text)}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}
     .overlay.show{display:flex}
-    .modal{
-      width:min(560px,100%);
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:var(--panel);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
+    .modal{width:min(560px,100%);border-radius:18px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
     .modal .content{padding:16px}
     .modal .content p{margin:0 0 10px 0;color:var(--muted);line-height:1.5}
-    .toast-wrap{
-      position:fixed;
-      right:14px;
-      bottom:14px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      z-index:80;
-    }
-    .toast{
-      min-width:240px;
-      max-width:380px;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:var(--panel);
-      box-shadow:var(--shadow);
-      font-size:13px;
-    }
+    .toast-wrap{position:fixed;right:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;z-index:80}
+    .toast{min-width:240px;max-width:380px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow);font-size:13px}
     .toast.ok{border-color:rgba(34,197,94,.35)}
     .toast.err{border-color:rgba(239,68,68,.35)}
     .toast.warn{border-color:rgba(245,158,11,.35)}
-    @media (max-width:1100px){
-      main{grid-template-columns:1fr}
-      .list,.scroll{max-height:none}
-    }
+    @media (max-width:1100px){main{grid-template-columns:1fr}.list,.scroll{max-height:none}}
   </style>
 </head>
 <body>
@@ -419,7 +247,6 @@
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-
   const els = {
     fileInput: $('fileInput'),
     drop: $('drop'),
@@ -520,9 +347,7 @@
   function analyzeLocal(asset) {
     const words = normalizeWords(asset.file.name);
     const cleaned = words.filter(w => !isWeakKeyword(w));
-    const primary =
-      cleaned[0] ||
-      (asset.type === 'video' ? 'video' : asset.type === 'vector' ? 'vector' : 'photo');
+    const primary = cleaned[0] || (asset.type === 'video' ? 'video' : asset.type === 'vector' ? 'vector' : 'photo');
 
     const baseConcepts = [
       'business','marketing','technology','creative','modern','digital',
@@ -586,10 +411,7 @@
       'web'
     ].filter(Boolean);
 
-    const cleaned = uniq(seed)
-      .filter(k => !isWeakKeyword(k))
-      .map(k => k.toLowerCase());
-
+    const cleaned = uniq(seed).filter(k => !isWeakKeyword(k)).map(k => k.toLowerCase());
     return cleaned.slice(0, 50);
   }
 
@@ -627,9 +449,7 @@
   function complianceWarnings(analysis) {
     const txt = JSON.stringify(analysis).toLowerCase();
     const warnings = [];
-    if (txt.includes('logo') || txt.includes('brand') || txt.includes('trademark')) {
-      warnings.push('Possible logo, brand, or trademark risk detected.');
-    }
+    if (txt.includes('logo') || txt.includes('brand') || txt.includes('trademark')) warnings.push('Possible logo, brand, or trademark risk detected.');
     if (txt.includes('watermark')) warnings.push('Possible watermark detected.');
     return warnings;
   }
@@ -637,15 +457,9 @@
   function releaseWarnings(analysis) {
     const txt = JSON.stringify(analysis).toLowerCase();
     const warnings = [];
-    if (txt.includes('face') || txt.includes('person') || txt.includes('people') || txt.includes('human')) {
-      warnings.push('Model release may be required for recognizable people.');
-    }
-    if (txt.includes('building') || txt.includes('house') || txt.includes('private property')) {
-      warnings.push('Property release may be required for recognizable property/buildings.');
-    }
-    if (txt.includes('vehicle') || txt.includes('car') || txt.includes('motorcycle')) {
-      warnings.push('Vehicle/property release may be required depending on context.');
-    }
+    if (txt.includes('face') || txt.includes('person') || txt.includes('people') || txt.includes('human')) warnings.push('Model release may be required for recognizable people.');
+    if (txt.includes('building') || txt.includes('house') || txt.includes('private property')) warnings.push('Property release may be required for recognizable property/buildings.');
+    if (txt.includes('vehicle') || txt.includes('car') || txt.includes('motorcycle')) warnings.push('Vehicle/property release may be required depending on context.');
     return warnings;
   }
 
@@ -760,64 +574,16 @@
     }
   }
 
-  function processFiles(files) {
-    const arr = [...files].slice(0, 1000);
-    if (!arr.length) return;
-
-    let done = 0;
-    els.barFill.style.width = '0%';
-    toast(`${arr.length} file(s) loaded`, 'ok');
-
-    arr.forEach(file => {
-      if (!ACCEPTED.test(file.name)) return;
-      const type = detectType(file);
-      const previewable = !!(file.type.startsWith('image/') || file.type.startsWith('video/') || type === 'vector');
-
-      const asset = {
-        id: uid(),
-        file,
-        type,
-        previewable,
-        url: URL.createObjectURL(file),
-        status: state.apiKey ? 'Queued for Gemini analysis' : 'Fallback local analysis',
-        analysis: analyzeLocal({ file, type }),
-        metadata: null
-      };
-
-      asset.metadata = buildMetadata(asset.analysis, asset.type);
-      state.assets.push(asset);
-      done++;
-      els.barFill.style.width = `${Math.round(done / arr.length * 100)}%`;
-    });
-
-    if (!state.selectedId && state.assets[0]) state.selectedId = state.assets[0].id;
-    renderAssetList();
-    renderSelected();
-    toast('Batch processing finished', 'ok');
-
-    if (state.apiKey) reanalyzeAll();
-  }
-
   function escapeHtml(str) {
-    return String(str ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
-
-  function escapeAttr(str) {
-    return String(str ?? '').replace(/"/g, '&quot;');
-  }
+  function escapeAttr(str) { return String(str ?? '').replace(/"/g, '&quot;'); }
 
   function prettyBytes(bytes) {
     const units = ['B', 'KB', 'MB', 'GB'];
     let i = 0;
     let n = Number(bytes || 0);
-    while (n >= 1024 && i < units.length - 1) {
-      n /= 1024;
-      i++;
-    }
+    while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
     return `${n.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
   }
 
@@ -842,8 +608,7 @@
       const reader = new FileReader();
       reader.onload = () => {
         const result = String(reader.result || '');
-        const base64 = result.split(',')[1] || '';
-        resolve(base64);
+        resolve(result.split(',')[1] || '');
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
@@ -899,17 +664,14 @@ Rules:
       }
     };
 
-    const res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': state.apiKey
-        },
-        body: JSON.stringify(body)
-      }
-    );
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': state.apiKey
+      },
+      body: JSON.stringify(body)
+    });
 
     if (!res.ok) {
       const text = await res.text().catch(() => '');
@@ -1062,32 +824,10 @@ Rules:
 
     state.assets.forEach(a => {
       const m = a.metadata;
-      adobe.push([
-        csvEscape(a.file.name),
-        csvEscape(m.adobe.Title),
-        csvEscape(m.adobe.Keywords.join(', ')),
-        csvEscape(m.adobe.Category)
-      ].join(','));
-
-      shutter.push([
-        csvEscape(a.file.name),
-        csvEscape(m.shutterstock.Description),
-        csvEscape(m.shutterstock.Keywords.join(', '))
-      ].join(','));
-
-      freepik.push([
-        csvEscape(a.file.name),
-        csvEscape(m.freepik.Title),
-        csvEscape(m.freepik.Tags.join(', '))
-      ].join(','));
-
-      dream.push([
-        csvEscape(a.file.name),
-        csvEscape(m.dreamstime.Title),
-        csvEscape(m.dreamstime.Description),
-        csvEscape(m.dreamstime.Keywords.join(', ')),
-        csvEscape(m.dreamstime.Category)
-      ].join(','));
+      adobe.push([csvEscape(a.file.name), csvEscape(m.adobe.Title), csvEscape(m.adobe.Keywords.join(', ')), csvEscape(m.adobe.Category)].join(','));
+      shutter.push([csvEscape(a.file.name), csvEscape(m.shutterstock.Description), csvEscape(m.shutterstock.Keywords.join(', '))].join(','));
+      freepik.push([csvEscape(a.file.name), csvEscape(m.freepik.Title), csvEscape(m.freepik.Tags.join(', '))].join(','));
+      dream.push([csvEscape(a.file.name), csvEscape(m.dreamstime.Title), csvEscape(m.dreamstime.Description), csvEscape(m.dreamstime.Keywords.join(', ')), csvEscape(m.dreamstime.Category)].join(','));
     });
 
     const bundle =
@@ -1136,33 +876,9 @@ Rules:
 
   function loadSample() {
     const samples = [
-      {
-        id: uid(),
-        file: { name: 'business-team-meeting.jpg', size: 204800, type: 'image/jpeg' },
-        type: 'image',
-        previewable: false,
-        url: '',
-        status: 'Fallback local analysis',
-        analysis: analyzeLocal({ file: { name: 'business-team-meeting.jpg' }, type: 'image' })
-      },
-      {
-        id: uid(),
-        file: { name: 'modern-ui-icons.svg', size: 98200, type: 'image/svg+xml' },
-        type: 'vector',
-        previewable: false,
-        url: '',
-        status: 'Fallback local analysis',
-        analysis: analyzeLocal({ file: { name: 'modern-ui-icons.svg' }, type: 'vector' })
-      },
-      {
-        id: uid(),
-        file: { name: 'city-timelapse.mp4', size: 5024000, type: 'video/mp4' },
-        type: 'video',
-        previewable: false,
-        url: '',
-        status: 'Fallback local analysis',
-        analysis: analyzeLocal({ file: { name: 'city-timelapse.mp4' }, type: 'video' })
-      }
+      { id: uid(), file: { name: 'business-team-meeting.jpg', size: 204800, type: 'image/jpeg' }, type: 'image', previewable: false, url: '', status: 'Fallback local analysis', analysis: analyzeLocal({ file: { name: 'business-team-meeting.jpg' }, type: 'image' }) },
+      { id: uid(), file: { name: 'modern-ui-icons.svg', size: 98200, type: 'image/svg+xml' }, type: 'vector', previewable: false, url: '', status: 'Fallback local analysis', analysis: analyzeLocal({ file: { name: 'modern-ui-icons.svg' }, type: 'vector' }) },
+      { id: uid(), file: { name: 'city-timelapse.mp4', size: 5024000, type: 'video/mp4' }, type: 'video', previewable: false, url: '', status: 'Fallback local analysis', analysis: analyzeLocal({ file: { name: 'city-timelapse.mp4' }, type: 'video' }) }
     ];
     samples.forEach(s => s.metadata = buildMetadata(s.analysis, s.type));
     state.assets = samples;
@@ -1198,12 +914,6 @@ Rules:
     toast('Cleared', 'ok');
   }
 
-  function initApiFlow() {
-    state.apiKey = null;
-    setApiStatus();
-    toast('API key will be requested when needed', 'warn');
-  }
-
   function processFiles(files) {
     const arr = [...files].slice(0, 1000);
     if (!arr.length) return;
@@ -1216,6 +926,7 @@ Rules:
       if (!ACCEPTED.test(file.name)) return;
       const type = detectType(file);
       const previewable = !!(file.type.startsWith('image/') || file.type.startsWith('video/') || type === 'vector');
+
       const asset = {
         id: uid(),
         file,
@@ -1226,6 +937,7 @@ Rules:
         analysis: analyzeLocal({ file, type }),
         metadata: null
       };
+
       asset.metadata = buildMetadata(asset.analysis, asset.type);
       state.assets.push(asset);
       done++;
@@ -1240,22 +952,15 @@ Rules:
     if (state.apiKey) reanalyzeAll();
   }
 
+  function initApiFlow() {
+    state.apiKey = null;
+    setApiStatus();
+    toast('API key will be requested when needed', 'warn');
+  }
+
   els.fileInput.addEventListener('change', e => processFiles(e.target.files));
-
-  ['dragenter','dragover'].forEach(evt => {
-    els.drop.addEventListener(evt, e => {
-      e.preventDefault();
-      els.drop.classList.add('drag');
-    });
-  });
-
-  ['dragleave','drop'].forEach(evt => {
-    els.drop.addEventListener(evt, e => {
-      e.preventDefault();
-      els.drop.classList.remove('drag');
-    });
-  });
-
+  ['dragenter','dragover'].forEach(evt => els.drop.addEventListener(evt, e => { e.preventDefault(); els.drop.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(evt => els.drop.addEventListener(evt, e => { e.preventDefault(); els.drop.classList.remove('drag'); }));
   els.drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
 
   els.themeBtn.addEventListener('click', () => {
@@ -1273,58 +978,13 @@ Rules:
   els.apiBtn.addEventListener('click', showApiOverlay);
   els.cancelApiBtn.addEventListener('click', hideApiOverlay);
   els.saveApiBtn.addEventListener('click', saveApiKey);
-  els.apiOverlay.addEventListener('click', e => {
-    if (e.target === els.apiOverlay) hideApiOverlay();
-  });
+  els.apiOverlay.addEventListener('click', e => { if (e.target === els.apiOverlay) hideApiOverlay(); });
   els.apiKeyInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') saveApiKey();
     if (e.key === 'Escape') hideApiOverlay();
   });
 
-  function showApiOverlay() {
-    els.apiKeyInput.value = '';
-    els.apiOverlay.classList.add('show');
-    setTimeout(() => els.apiKeyInput.focus(), 50);
-  }
-
-  function hideApiOverlay() {
-    els.apiOverlay.classList.remove('show');
-  }
-
-  function setApiStatus() {
-    els.apiStatus.textContent = state.apiKey ? 'API key loaded for this session' : 'API key not set';
-    els.apiBtn.textContent = state.apiKey ? 'Change API Key' : 'Set API Key';
-  }
-
-  function saveApiKey() {
-    const key = String(els.apiKeyInput.value || '').trim();
-    if (!key) {
-      toast('API key masih kosong', 'err');
-      return;
-    }
-    state.apiKey = key;
-    setApiStatus();
-    hideApiOverlay();
-    toast('API key saved for this session', 'ok');
-    reanalyzeAll();
-  }
-
-  function initWarnings() {
-    setTimeout(() => {
-      if (!state.apiKey) {
-        setApiStatus();
-      }
-    }, 0);
-  }
-
   initApiFlow();
-  initWarnings();
-  renderAssetList();
-  setApiStatus();
-
-  window.addEventListener('beforeunload', () => {
-    state.assets.forEach(a => { if (a.url) URL.revokeObjectURL(a.url); });
-  });
 })();
 </script>
 </body>
